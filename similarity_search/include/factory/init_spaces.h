@@ -19,7 +19,10 @@
 
 #include "factory/space/space_edist.h"
 #include "factory/space/space_bit_hamming.h"
+#include "factory/space/space_bit_and.h"
 #include "factory/space/space_bit_jaccard.h"
+#include "factory/space/space_bit_and_norm_lft.h"
+#include "factory/space/space_bit_and_norm_rgt.h"
 #include "factory/space/space_bregman.h"
 #include "factory/space/space_dummy.h"
 #include "factory/space/space_js.h"
@@ -43,11 +46,20 @@ inline void initSpaces() {
   REGISTER_SPACE_CREATOR(int,    SPACE_DUMMY,  CreateDummy)
   REGISTER_SPACE_CREATOR(float,  SPACE_DUMMY,  CreateDummy)
 
-  // Registering binary/bit Hamming/Jaccard
+  // Registering binary/bit Hamming/Jaccard/And/AndNorm2x
   SpaceFactoryRegistry<int>::CreateFuncPtr bit_hamming_func_ptr = CreateBitHamming<int,uint32_t>;
-  REGISTER_SPACE_CREATOR(int,    SPACE_BIT_HAMMING, bit_hamming_func_ptr )
+  REGISTER_SPACE_CREATOR(int, SPACE_BIT_HAMMING, bit_hamming_func_ptr )
+
   SpaceFactoryRegistry<float>::CreateFuncPtr bit_jaccard_func_ptr = CreateBitJaccard<float,uint32_t>;
   REGISTER_SPACE_CREATOR(float, SPACE_BIT_JACCARD,  bit_jaccard_func_ptr )
+
+  SpaceFactoryRegistry<float>::CreateFuncPtr bit_and_norm_lft_func_ptr = CreateBitAndNormLft<float,uint32_t>;
+  REGISTER_SPACE_CREATOR(float, SPACE_BIT_AND_NORM_LFT,  bit_and_norm_lft_func_ptr )
+  SpaceFactoryRegistry<float>::CreateFuncPtr bit_and_norm_rgt_func_ptr = CreateBitAndNormRgt<float,uint32_t>;
+  REGISTER_SPACE_CREATOR(float, SPACE_BIT_AND_NORM_RGT,  bit_and_norm_rgt_func_ptr )
+  
+  SpaceFactoryRegistry<int>::CreateFuncPtr bit_and_func_ptr = CreateBitAnd<int,uint32_t>;
+  REGISTER_SPACE_CREATOR(int,    SPACE_BIT_AND, bit_and_func_ptr )
 
   // Registering the Levensthein-distance: regular and normalized
   REGISTER_SPACE_CREATOR(int,   SPACE_LEVENSHTEIN,  CreateLevenshtein)

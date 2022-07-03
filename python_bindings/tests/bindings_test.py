@@ -266,6 +266,21 @@ class BitJaccardTestCase(TestCaseBase, BitVectorIndexTestMixin):
         return nmslib.init(method='hnsw', space=space, data_type=nmslib.DataType.OBJECT_AS_STRING,
                            dtype=nmslib.DistType.FLOAT)
 
+class BitAndNormLftTestCase(TestCaseBase, BitVectorIndexTestMixin):
+    def _get_index(self, space='bit_and_norm_lft'):
+        return nmslib.init(method='hnsw', space=space, data_type=nmslib.DataType.OBJECT_AS_STRING,
+                           dtype=nmslib.DistType.FLOAT)
+
+class BitAndNormRgtTestCase(TestCaseBase, BitVectorIndexTestMixin):
+    def _get_index(self, space='bit_and_norm_rgt'):
+        return nmslib.init(method='hnsw', space=space, data_type=nmslib.DataType.OBJECT_AS_STRING,
+                           dtype=nmslib.DistType.FLOAT)
+
+class BitAndTestCase(TestCaseBase, BitVectorIndexTestMixin):
+    def _get_index(self, space='bit_and'):
+        return nmslib.init(method='hnsw', space=space, data_type=nmslib.DataType.OBJECT_AS_STRING,
+                           dtype=nmslib.DistType.INT)
+
 
 class SparseJaccardTestCase(TestCaseBase, BitVectorIndexTestMixin):
     def _get_index(self, space='jaccard_sparse'):

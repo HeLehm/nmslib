@@ -236,6 +236,19 @@ dist_t inline BitJaccard(const dist_uint_t* a, const dist_uint_t* b, size_t qty)
   return 1  - (dist_t(num) / dist_t(den));
 }
 
+template <typename dist_t, typename dist_uint_t>
+dist_t inline BitAndNorm(const dist_uint_t* a, const dist_uint_t* b, size_t qty) {
+  dist_uint_t num = 0, den = 0;
+
+  for (size_t i=0; i < qty; ++i) {
+    //  __builtin_popcount quickly computes the number on 1s
+    num +=  __builtin_popcount(a[i] & b[i]);
+    den +=  __builtin_popcount(a[i]);
+  }
+
+  return 1  - (dist_t(num) / dist_t(den));
+}
+
 //unsigned BitHamming(const uint32_t* a, const uint32_t* b, size_t qty);
 
 unsigned inline BitHamming(const uint32_t* a, const uint32_t* b, size_t qty) {
@@ -245,6 +258,22 @@ unsigned inline BitHamming(const uint32_t* a, const uint32_t* b, size_t qty) {
     //  __builtin_popcount quickly computes the number on 1s
     res +=  __builtin_popcount(a[i] ^ b[i]);
   }
+
+  return res;
+}
+
+//unsigned BitAnd(const uint32_t* a, const uint32_t* b, size_t qty);
+
+unsigned inline BitAnd(const uint32_t* a, const uint32_t* b, size_t qty, size_t datalength) {
+  unsigned res = 0;
+  
+
+  for (size_t i=0; i < qty; ++i) {
+    //  __builtin_popcount quickly computes the number on 1s
+    res +=  __builtin_popcount(a[i] & b[i]);
+  }
+  
+  res = datalength - res;
 
   return res;
 }
