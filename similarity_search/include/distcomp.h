@@ -246,7 +246,11 @@ dist_t inline BitAndNorm(const dist_uint_t* a, const dist_uint_t* b, size_t qty)
     den +=  __builtin_popcount(a[i]);
   }
 
-  return 1  - (dist_t(num) / dist_t(den));
+  if (den == 0 || num == 0) {
+    return 1;
+  }
+
+  return 1.0  - (dist_t(num) / dist_t(den));
 }
 
 //unsigned BitHamming(const uint32_t* a, const uint32_t* b, size_t qty);
