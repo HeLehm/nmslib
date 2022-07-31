@@ -247,7 +247,7 @@ dist_t inline BitAndNorm(const dist_uint_t* a, const dist_uint_t* b, size_t qty)
   }
 
   if (den == 0 || num == 0) {
-    return 1;
+    return 1.0;
   }
 
   return 1.0  - (dist_t(num) / dist_t(den));

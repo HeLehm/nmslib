@@ -26,6 +26,7 @@
 #include "space.h"
 #include "distcomp.h"
 #include "space_bit_vector.h"
+#include "my_isnan_isinf.h"
 
 #define SPACE_BIT_AND_NORM_LFT_COS "bit_and_norm_lft_cos"
 
@@ -41,23 +42,26 @@ class SpaceBitAndNormLftCos : public SpaceBitVector<dist_t,dist_uint_t> {
 
  protected:
   virtual dist_t HiddenDistance(const Object* obj1, const Object* obj2) const {
-    CHECK(obj1->datalength() > 0);
+    CHECK(obj1->datalength() > 768 * sizeof(dist_t));
     CHECK(obj1->datalength() == obj2->datalength());
 
     const dist_uint_t* x_int = reinterpret_cast<const dist_uint_t*>(obj1->data());
     const dist_uint_t* y_int = reinterpret_cast<const dist_uint_t*>(obj2->data());
+
     const size_t length_int = (((obj1->datalength() - (768 * sizeof(dist_t))) / sizeof(dist_uint_t) - 1));
 
+    
     const dist_t* x_float = reinterpret_cast<const dist_t*>(x_int + length_int);
     const dist_t* y_float = reinterpret_cast<const dist_t*>(y_int + length_int);
     const size_t length_float = 768;
 
-    dist_t val = CosineSimilarity(x_float, y_float, length_float);
+    dist_t val = 1.0 - CosineSimilarity(x_float, y_float, length_float);
+
 
     // shoudl never happen but we still copy  it  from the original code
     if (my_isnan(val)) throw runtime_error("Bug: NAN dist! (SpaceCosineSimilarity (Bit norm version))");
 
-    return BitAndNorm<dist_t,dist_uint_t>(x_int, y_int, length_int) + val;
+    return BitAndNorm<dist_t,dist_uint_t>(x_int, y_int, length_int) +  val;
   }
 
   DISABLE_COPY_AND_ASSIGN(SpaceBitAndNormLftCos);

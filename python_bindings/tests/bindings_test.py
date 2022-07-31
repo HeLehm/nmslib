@@ -271,6 +271,11 @@ class BitAndNormLftTestCase(TestCaseBase, BitVectorIndexTestMixin):
         return nmslib.init(method='hnsw', space=space, data_type=nmslib.DataType.OBJECT_AS_STRING,
                            dtype=nmslib.DistType.FLOAT)
 
+class BitAndNormLftCosTestCase(TestCaseBase, BitVectorIndexTestMixin):
+    def _get_index(self, space='bit_and_norm_lft_cos'):
+        return nmslib.init(method='hnsw', space=space, data_type=nmslib.DataType.OBJECT_AS_STRING,
+                           dtype=nmslib.DistType.FLOAT)
+
 class BitAndNormRgtTestCase(TestCaseBase, BitVectorIndexTestMixin):
     def _get_index(self, space='bit_and_norm_rgt'):
         return nmslib.init(method='hnsw', space=space, data_type=nmslib.DataType.OBJECT_AS_STRING,
