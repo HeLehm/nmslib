@@ -456,6 +456,31 @@ PYBIND11_PLUGIN(nmslib) {
   m.attr("__version__") = py::str("dev");
 #endif
 
+  /*
+  custom float and uint conversions pybind 
+  ----------------------- START -----------------------
+  */
+
+
+  m.def("float_to_bits", [](float f) {
+
+    union
+    {
+        float input; // assumes sizeof(float) == sizeof(int)
+        uint32_t output;
+    } data;
+
+    data.input = f;
+
+    std::bitset<sizeof(float) * CHAR_BIT> bits(data.output);
+    return bits.to_string();
+  });
+
+  /*
+  custom float and uint conversions  pybind
+  ----------------------- END -----------------------
+  */
+
   py::enum_<DistType>(m, "DistType")
     .value("FLOAT", DISTTYPE_FLOAT)
     .value("INT", DISTTYPE_INT);

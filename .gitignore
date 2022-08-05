@@ -18,3 +18,4 @@ similarity_search/tmpfile.bin
 .idea
 dist/
 */.DS_Store
+.vscode/
