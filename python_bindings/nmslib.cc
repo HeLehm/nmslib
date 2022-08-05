@@ -464,7 +464,9 @@ PYBIND11_PLUGIN(nmslib) {
   m.def("uint32_to_bits", [](unsigned long int u_value) 
   {
     std::bitset<32> bits(u_value);
-    return bits.to_string();
+    string str =  bits.to_string();
+    reverse(str.begin(), str.end());
+    return str;
   }, "Convert an unsigned long int to a string of bits (no spaces)");
 
   m.def("float_to_bits", [](float f) {
@@ -478,7 +480,10 @@ PYBIND11_PLUGIN(nmslib) {
     data.input = f;
 
     std::bitset<sizeof(float) * CHAR_BIT> bits(data.output);
-    return bits.to_string();
+    string str = bits.to_string();
+    
+    reverse(str.begin(), str.end());
+    return str;
   }, "Convert a float to a string of bits (no spaces)");
 
   /*
