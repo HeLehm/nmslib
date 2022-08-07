@@ -21,6 +21,7 @@
 #include "factory/space/space_bit_hamming.h"
 #include "factory/space/space_bit_and.h"
 #include "factory/space/space_bit_jaccard.h"
+#include "factory/space/space_mylingua.h"
 #include "factory/space/space_bit_and_norm_lft_cos_varvec_varweigh.h"
 #include "factory/space/space_bit_and_norm_lft_cos_varvec.h"
 #include "factory/space/space_bit_and_norm_lft_cos.h"
@@ -57,6 +58,8 @@ inline void initSpaces() {
   REGISTER_SPACE_CREATOR(float, SPACE_BIT_JACCARD,  bit_jaccard_func_ptr )
 
   // My custom methods (mylingua)
+  SpaceFactoryRegistry<float>::CreateFuncPtr mylingua_func_ptr = CreateMyLingua<float,uint32_t>;
+  REGISTER_SPACE_CREATOR(float, SPACE_MYLINGUA,  mylingua_func_ptr )
 
   SpaceFactoryRegistry<float>::CreateFuncPtr bit_and_norm_lft_cos_varvec_varweigh_func_ptr = CreateBitAndNormLftCosVarvecVarweigh<float,uint32_t>;
   REGISTER_SPACE_CREATOR(float, SPACE_BIT_AND_NORM_LFT_COS_VARVEC_VARWEIGH,  bit_and_norm_lft_cos_varvec_varweigh_func_ptr )
