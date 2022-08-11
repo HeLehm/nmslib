@@ -23,6 +23,8 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <bitset>
+
 
 #include "init.h"
 #include "index.h"
@@ -463,7 +465,7 @@ PYBIND11_PLUGIN(nmslib) {
 
   m.def("uint32_to_bits", [](unsigned long int u_value) 
   {
-    std::bitset<32> bits(u_value);
+    std::bitset<sizeof(unsigned long int)> bits(u_value);
     string str =  bits.to_string();
     reverse(str.begin(), str.end());
     return str;
