@@ -21,6 +21,8 @@
 #include "factory/space/space_bit_hamming.h"
 #include "factory/space/space_bit_and.h"
 #include "factory/space/space_bit_jaccard.h"
+#include "factory/space/space_test_encode_float.h"
+#include "factory/space/space_test_encode_uint.h"
 #include "factory/space/space_mylingua.h"
 #include "factory/space/space_bit_and_norm_lft_cos_varvec_varweigh.h"
 #include "factory/space/space_bit_and_norm_lft_cos_varvec.h"
@@ -56,6 +58,14 @@ inline void initSpaces() {
 
   SpaceFactoryRegistry<float>::CreateFuncPtr bit_jaccard_func_ptr = CreateBitJaccard<float,uint32_t>;
   REGISTER_SPACE_CREATOR(float, SPACE_BIT_JACCARD,  bit_jaccard_func_ptr )
+
+  // Mylingua test encoding methods 
+  SpaceFactoryRegistry<int>::CreateFuncPtr test_uint_func_ptr = CreateTestEncodeUint<int,uint32_t>;
+  REGISTER_SPACE_CREATOR(int, SPACE_TEST_ENCODE_UINT, test_uint_func_ptr )
+
+  SpaceFactoryRegistry<float>::CreateFuncPtr test_float_func_ptr = CreateTestEncodeFloat<float,uint32_t>;
+  REGISTER_SPACE_CREATOR(float, SPACE_TEST_ENCODE_FLOAT,  test_float_func_ptr )
+
 
   // My custom methods (mylingua)
   SpaceFactoryRegistry<float>::CreateFuncPtr mylingua_func_ptr = CreateMyLingua<float,uint32_t>;
