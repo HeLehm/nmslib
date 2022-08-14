@@ -4,7 +4,7 @@ import numpy as np
 
 class TestFloatEncoding(unittest.TestCase):
     def test_float_encoding(self):
-        # Test that float32 and float64 are encoded correctly.
+        # Test that float32 are encoded correctly.
         # This is a regression test for a bug that caused float32 to be encoded as float64.
         # See
         X = np.random.rand(100).astype(np.float32)
@@ -19,7 +19,7 @@ class TestFloatEncoding(unittest.TestCase):
 
 class TestIntEncoding(unittest.TestCase):
     def test_int_encoding(self):
-        # Test that int32 and int64 are encoded correctly.
+        # Test that int32  are encoded correctly.
         # This is a regression test for a bug that caused int32 to be encoded as int64.
         # See
         X = np.random.randint(0, 100, 100, dtype=np.uint32)

@@ -17,14 +17,17 @@
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
-#include <algorithm>
+//#include <algorithm>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
 #include <bitset>
+#include <stdint.h>
 
+
+#include "custom_conversion_functions.h"
 
 #include "init.h"
 #include "index.h"
@@ -37,6 +40,8 @@
 #include "space/space_sparse_vector.h"
 #include "space/space_l2sqr_sift.h"
 #include "thread_pool.h"
+
+
 
 #include "cpu_feature_guard.h"
 
@@ -463,30 +468,9 @@ PYBIND11_PLUGIN(nmslib) {
   ----------------------- START -----------------------
   */
 
-  m.def("uint32_to_bits", [](unsigned long int u_value) 
-  {
-    std::bitset<sizeof(unsigned long int)> bits(u_value);
-    string str =  bits.to_string();
-    reverse(str.begin(), str.end());
-    return str;
-  }, "Convert an unsigned long int to a string of bits (no spaces)");
+  m.def("uint32_to_bits", &custom_conversion_functions_hergen::uint32_to_string, "Convert an unsigned long int to a string of bits (no spaces)");
 
-  m.def("float_to_bits", [](float f) {
-
-    union
-    {
-        float input; // assumes sizeof(float) == sizeof(int)
-        uint32_t output;
-    } data;
-
-    data.input = f;
-
-    std::bitset<sizeof(float) * CHAR_BIT> bits(data.output);
-    string str = bits.to_string();
-    
-    reverse(str.begin(), str.end());
-    return str;
-  }, "Convert a float to a string of bits (no spaces)");
+  m.def("float_to_bits", &custom_conversion_functions_hergen::float_to_bits, "Convert a float to a string of bits (no spaces)");
 
   /*
   custom float and uint conversions  pybind
