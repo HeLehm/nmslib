@@ -26,6 +26,7 @@ class QueryServiceIf {
   virtual void rangeQuery(ReplyEntryList& _return, const double r, const std::string& queryObj, const bool retExternId, const bool retObj) = 0;
   virtual void knnQueryBatch(ReplyEntryListBatch& _return, const int32_t k, const std::vector<std::string> & queryObj, const bool retExternId, const bool retObj, const int32_t numThreads) = 0;
   virtual double getDistance(const std::string& obj1, const std::string& obj2) = 0;
+  virtual double getDistanceToObj(const std::string& obj1, const std::string& obj2) = 0;
 };
 
 class QueryServiceIfFactory {
@@ -698,6 +699,7 @@ class QueryServiceClient : virtual public QueryServiceIf {
   void knnQueryBatch(ReplyEntryListBatch& _return, const int32_t k, const std::vector<std::string> & queryObj, const bool retExternId, const bool retObj, const int32_t numThreads);
   void send_knnQueryBatch(const int32_t k, const std::vector<std::string> & queryObj, const bool retExternId, const bool retObj, const int32_t numThreads);
   void recv_knnQueryBatch(ReplyEntryListBatch& _return);
+  double getDistanceToObj(const std::string& obj1, const std::string& obj2);
   double getDistance(const std::string& obj1, const std::string& obj2);
   void send_getDistance(const std::string& obj1, const std::string& obj2);
   double recv_getDistance();
@@ -847,6 +849,7 @@ class QueryServiceConcurrentClient : virtual public QueryServiceIf {
   void knnQueryBatch(ReplyEntryListBatch& _return, const int32_t k, const std::vector<std::string> & queryObj, const bool retExternId, const bool retObj, const int32_t numThreads);
   int32_t send_knnQueryBatch(const int32_t k, const std::vector<std::string> & queryObj, const bool retExternId, const bool retObj, const int32_t numThreads);
   void recv_knnQueryBatch(ReplyEntryListBatch& _return, const int32_t seqid);
+  double getDistanceToObj(const std::string& obj1, const std::string& obj2);
   double getDistance(const std::string& obj1, const std::string& obj2);
   int32_t send_getDistance(const std::string& obj1, const std::string& obj2);
   double recv_getDistance(const int32_t seqid);

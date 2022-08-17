@@ -35,6 +35,14 @@ NMSLIB started as a personal project of Bilegsaikhan Naidan, who created the ini
 and participated in earlier evaluations. 
 The most successful class of methods--neighborhood/proximity graphs--is represented by the Hierarchical Navigable Small World Graph (HNSW) due to Malkov and Yashunin (see the publications below). Other most useful methods, include a modification of the VP-tree due to Boytsov and Naidan (2013), a Neighborhood APProximation index (NAPP) proposed by Tellez et al. (2013) and improved by David Novak, as well as a vanilla uncompressed inverted file.
 
+## New Spaces added by me (Hergen Lehmann)
+
+* 'mylingua'
+  * input as string
+    * 32bits uint descibing the length of the float vector
+    * x (multiple of 32) bits that will be compared with BitAndNorm
+    * float vector compared with cosinesimilarity (length = first uint input)
+
 
 ## Credits and Citing
 

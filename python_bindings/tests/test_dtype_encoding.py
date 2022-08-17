@@ -34,6 +34,10 @@ class TestIntEncoding(unittest.TestCase):
             self.assertTrue(dist[0] == X[i])
 
 
+if __name__ == '__main__':
+    unittest.main()
+    
+
 
 
 
