@@ -19,6 +19,7 @@
 #include <map>
 #include <stdexcept>
 
+#include <portable_popcount.h>
 #include <string.h>
 #include "global.h"
 #include "object.h"
@@ -49,6 +50,19 @@ class SpaceMyLingua : public SpaceBitVector<dist_t,dist_uint_t> {
     const dist_uint_t* x_int = reinterpret_cast<const dist_uint_t*>(obj1->data());
     const dist_uint_t* y_int = reinterpret_cast<const dist_uint_t*>(obj2->data());
 
+    // compare topic filters 
+    const dist_uint_t topic_x = *x_int; // article
+    const dist_uint_t topic_y = *y_int; // user
+
+    if (__builtin_popcount(topic_x & topic_y) == 0) {
+      // topic missmatch so rreturn highets distance possible
+      return 1.0;
+    }
+
+    // shift x_int and y_int to the next dist_uint32_t
+    x_int++;
+    y_int++;
+
     // get vector_size (first dist_uint32_t)
     const dist_uint_t vector_size = *x_int;
 
@@ -61,7 +75,7 @@ class SpaceMyLingua : public SpaceBitVector<dist_t,dist_uint_t> {
     // check if data input is valid
     CHECK(obj1->datalength() > vector_size * sizeof(dist_t));
 
-    const size_t length_int = (((obj1->datalength() - (vector_size * sizeof(dist_t))) / sizeof(dist_uint_t) - 2)); // minus 2 because: last is uint count and fist is vector size
+    const size_t length_int = (((obj1->datalength() - (vector_size * sizeof(dist_t))) / sizeof(dist_uint_t) - 3)); // minus 3 because: last is uint count and first is topic filter and second is vector size
 
     const dist_t* x_float = reinterpret_cast<const dist_t*>(x_int + length_int);
     const dist_t* y_float = reinterpret_cast<const dist_t*>(y_int + length_int);
