@@ -56,7 +56,7 @@ class SpaceMyLingua : public SpaceBitVector<dist_t,dist_uint_t> {
 
     if (__builtin_popcount(topic_x & topic_y) == 0) {
       // topic missmatch so rreturn highets distance possible
-      return 1.0;
+      return 2.0;
     }
 
     // shift x_int and y_int to the next dist_uint32_t
