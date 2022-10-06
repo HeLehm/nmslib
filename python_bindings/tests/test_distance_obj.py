@@ -44,7 +44,7 @@ class TestOuterDistance(unittest.TestCase):
         X = [
             ' '.join(random.choice(['1','0']) for _ in range(10)) for _ in range(6)
             ]
-        print(X[1])
+
 
         string_index = nmslib.init(method='hnsw', space='bit_jaccard', data_type=nmslib.DataType.OBJECT_AS_STRING, dtype=nmslib.DistType.FLOAT)
         string_index.addDataPointBatch(X)
@@ -55,24 +55,6 @@ class TestOuterDistance(unittest.TestCase):
             
             for id, dist in zip(ids, dists):
                 self.assertAlmostEqual(string_index.getDistanceToObj(X[i] ,X[id]), dist, places=6)
-
-    def tesssst_outer_distance(self):
-        # Test that outer distance is correctly computed.
-        # This is a regression test for a bug that caused outer distance to be computed incorrectly.
-        # See
-        X_input = np.random.rand(10,3).astype(np.float32)
-        
-        float_index = nmslib.init(method='hnsw', space='cosinesimil', dtype=nmslib.DistType.FLOAT)
-        float_index.addDataPointBatch(X_input)
-        float_index.createIndex({'post': 2}, print_progress=False)
-
-        for i in range(10):
-            ids, dists = float_index.knnQuery(X_input[i], k=5)
-            for id, dist in zip(ids, dists):
-                self.assertAlmostEqual(float_index.getDistanceToObj(i,X_input[id]),dist, places=6)
-                self.assertAlmostEqual(float_index.getDistance(i,id) , dist, places=6)
-                self.assertAlmostEqual(float_index.getDistance(i,id) , float_index.getDistanceToObj(i,X_input[id]), places=6)
-        self.assertTrue(True)
 
 
 if __name__ == '__main__':

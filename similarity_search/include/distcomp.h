@@ -24,6 +24,8 @@
 
 #include <portable_popcount.h>
 
+#include "mylingua_constants.h"
+
 #include "permutation_type.h"
 #include "idtype.h"
 
@@ -234,6 +236,89 @@ dist_t inline BitJaccard(const dist_uint_t* a, const dist_uint_t* b, size_t qty)
   }
 
   return 1  - (dist_t(num) / dist_t(den));
+}
+
+template <typename dist_t, typename dist_uint_t>
+dist_t inline BitAndNormFreq(const dist_uint_t* a, const dist_uint_t* b, const dist_t FreqMedianB, size_t qty) {
+  // a = article , b = user (query input), FreqMedianB = frequency index median of user (devided by 32)
+  dist_uint_t num = 0, den = 0;
+
+  uint32_t turtlePointer = 0;
+  int freq = 0;
+
+  for (size_t i=0; i < qty; ++i) {
+    //  __builtin_popcount quickly computes the number on 1s
+    num +=  __builtin_popcount(a[i] & b[i]);
+    den +=  __builtin_popcount(a[i]);
+    
+    freq += __builtin_popcount(a[i] & (~b[i]));
+  }
+
+  freq = freq / 2;
+
+  for (size_t i=0; i < qty; ++i) {
+    freq -= __builtin_popcount(a[i] & (~b[i]));
+    if (freq <= 0) {
+      turtlePointer = i;
+      break;
+    }
+  }
+  
+  //freqDist = if clamped: in between 1.0 and 2.0 here 1.0 is good and 2.0 is bad
+  dist_t freqDist = (dist_t(turtlePointer)/FreqMedianB); 
+  //reducee to 0.0 to 1.0
+  freqDist = fmax(0.0,fmin(1.0,freqDist - 1.0));
+
+
+  dist_t skillDist = 1.0;
+  if (!(den == 0 || num == 0)) {
+    skillDist = (1.0  - (dist_t(num) / dist_t(den)));
+  }
+
+  return (
+    ((1.0 - mylingua_constants::MYLINGUA_FREQ_WEIGHT) * skillDist)
+    + (mylingua_constants::MYLINGUA_FREQ_WEIGHT  *  freqDist)
+  );
+}
+
+template <typename dist_t, typename dist_uint_t>
+dist_t inline BitFreqOnly(const dist_uint_t* a, const dist_uint_t* b, const dist_t FreqMedianB, size_t qty) {
+  // a = article , b = user (query input), FreqMedianB = frequency index median of user (devided by 32)
+  dist_uint_t num = 0, den = 0;
+
+  int freq = 0;
+  uint32_t turtlePointer = 0;
+  // only needs to be int8 as the biggest vallue is 32 (or 31?)
+
+  for (size_t i=0; i < qty; ++i) {
+    //  __builtin_popcount quickly computes the number on 1s
+    num +=  __builtin_popcount(a[i] & b[i]);
+    den +=  __builtin_popcount(a[i]);
+
+    freq += __builtin_popcount(a[i] & (~b[i]));
+  }
+
+  //TODO freq = 0
+
+  freq = freq / 2;
+
+  for (size_t i=0; i < qty; ++i) {
+    freq -= __builtin_popcount(a[i] & (~b[i]));
+    if (freq <= 0) {
+      turtlePointer = i;
+      break;
+    }
+  }
+
+  std::cout << "[NMSLIB DEBUG] TurtlePointer: " << turtlePointer << "\n";
+  std::cout.flush();
+  
+  //freqDist = if clamped: in between 1.0 and 2.0 here 1.0 is good and 2.0 is bad
+  dist_t freqDist = (dist_t(turtlePointer)/FreqMedianB);
+  //reducee to 0.0 to 1.0
+  freqDist = fmax(0.0,fmin(1.0,freqDist - 1.0));
+
+  return freqDist;
 }
 
 template <typename dist_t, typename dist_uint_t>

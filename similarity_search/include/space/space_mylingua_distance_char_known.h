@@ -1,4 +1,6 @@
 /**
+ * 
+ * space_mylingua_distance_char_known
  * Non-metric Space Library
  *
  * Main developers: Bilegsaikhan Naidan, Leonid Boytsov, Yury Malkov, Ben Frederickson, David Novak
@@ -12,8 +14,8 @@
  * Apache License Version 2.0 http://www.apache.org/licenses/.
  *
  */
-#ifndef _SPACE_MYLINGUA_H_
-#define _SPACE_MYLINGUA_H_
+#ifndef _SPACE_MYLINGUA_DISTANCE_CHAR_KNOWN_H_
+#define _SPACE_MYLINGUA_DISTANCE_CHAR_KNOWN_H_
 
 #include <string>
 #include <map>
@@ -31,17 +33,17 @@
 #include "space_bit_vector.h"
 #include "my_isnan_isinf.h"
 
-#define SPACE_MYLINGUA "mylingua"
+#define SPACE_MYLINGUA_DISTANCE_CHAR_KNOWN "mylingua_distance_char_known"
 
 namespace similarity {
 
 template <typename dist_t, typename dist_uint_t>
-class SpaceMyLingua : public SpaceBitVector<dist_t,dist_uint_t> {
+class SpaceMyLinguaDistanceCharKnown : public SpaceBitVector<dist_t,dist_uint_t> {
  public:
-  explicit SpaceMyLingua() {}
-  virtual ~SpaceMyLingua() {}
+  explicit SpaceMyLinguaDistanceCharKnown() {}
+  virtual ~SpaceMyLinguaDistanceCharKnown() {}
 
-  virtual std::string StrDesc() const { return "Mylingua skill and interest weighted score"; }
+  virtual std::string StrDesc() const { return "Mylingua known char distance"; }
 
   //PLAN:
   //TODO: EDIT PYTHON ENCODING STUFF
@@ -98,49 +100,12 @@ class SpaceMyLingua : public SpaceBitVector<dist_t,dist_uint_t> {
     y_int++;
 
     // get char score 
-    dist_t char_dist = BitAndNormFreq<dist_t,dist_uint_t>(x_int, y_int, userCharFreqMedian,mylingua_constants::MYLINGUA_CHAR_VOCAB_LENGTH);
-    // move pointers
-    x_int += mylingua_constants::MYLINGUA_CHAR_VOCAB_LENGTH;
-    y_int += mylingua_constants::MYLINGUA_CHAR_VOCAB_LENGTH;
-
-  
-    //get word freqmedian of user
-    const dist_t userWordFreqMedian = *reinterpret_cast<const dist_t*>(y_int);
-    //assuming sizeof(dist_t) == sizeof(dist_uint_t)
-    x_int++;
-    y_int++;
-
-    // get word dist 
-    dist_t word_dist = BitAndNormFreq<dist_t,dist_uint_t>(x_int, y_int, userWordFreqMedian,mylingua_constants::MYLINGUA_WORD_VOCAB_LENGTH);
-    // move pointers 
-    x_int += mylingua_constants::MYLINGUA_WORD_VOCAB_LENGTH;
-    y_int += mylingua_constants::MYLINGUA_WORD_VOCAB_LENGTH;
-
-
-    // weigh the skill distances
-    dist_t skill_dist = (mylingua_constants::MYLINGUA_CHAR_WEIGHT * char_dist) + (mylingua_constants::MYLINGUA_WORD_WEIGHT * word_dist);
-
-    // reinterpret as floats to compite interest dist (cosine sim)
-    const dist_t* x_float = reinterpret_cast<const dist_t*>(x_int);
-    const dist_t* y_float = reinterpret_cast<const dist_t*>(y_int);
-
-    //compute cosine sim
-    dist_t interest_dist = CosineSimilarity(x_float, y_float, mylingua_constants::MYLINGUA_INTEREST_EMBEDDING_VEC_LEN);
-
-
-    // shoudl never happen but we still copy  it  from the original code
-    if (my_isnan(interest_dist)) throw runtime_error("Bug: NAN dist! (SpaceCosineSimilarity (Bit norm version varvec ))");
-
-    // compute interest weight
-    float fx = (1.0f - skill_dist) * 0.55f;
-    fx = (fx * fx) + 0.1f;
-
-    dist_t final_dist = (skill_dist * (1.0f - fx)) + (interest_dist * fx);
+    dist_t char_dist = BitAndNorm<dist_t,dist_uint_t>(x_int, y_int, mylingua_constants::MYLINGUA_CHAR_VOCAB_LENGTH);
     
-    return final_dist;
+    return char_dist;
   }
 
-  DISABLE_COPY_AND_ASSIGN(SpaceMyLingua);
+  DISABLE_COPY_AND_ASSIGN(SpaceMyLinguaDistanceCharKnown);
 };
 
 }  // namespace similarity
