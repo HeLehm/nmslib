@@ -362,11 +362,17 @@ struct IndexWrapper {
   //TODO: Test
 
   dist_t getDistanceToObj(py::object input1, py::object input2) {
-    //py::gil_scoped_release l;
-    //std::unique_ptr<const Object> readObject(input);
-    //const similarity::Object * obj1 = readObject(input1);
-    //const similarity::Object * obj2 = readObject(input2); //compiles at leats..
     dist_t distance = space->IndexTimeDistance(readObject(input1), readObject(input2));
+    return distance;
+  }
+
+  dist_t getDistanceToObjLft(py::object input1, size_t pos2) {
+    dist_t distance = space->IndexTimeDistance(readObject(input1), data.at(pos2));
+    return distance;
+  }
+
+  dist_t getDistanceToObjRgt(size_t pos1, py::object input2) {
+    dist_t distance = space->IndexTimeDistance(data.at(pos1), readObject(input2));
     return distance;
   }
 
@@ -695,6 +701,8 @@ void exportIndex(py::module * m) {
     .def("__getitem__", &IndexWrapper<dist_t>::at)
     .def("getDistance", &IndexWrapper<dist_t>::getDistance)
     .def("getDistanceToObj", &IndexWrapper<dist_t>::getDistanceToObj)
+    .def("getDistanceToObjLft", &IndexWrapper<dist_t>::getDistanceToObjLft)
+    .def("getDistanceToObjRgt", &IndexWrapper<dist_t>::getDistanceToObjRgt)
     .def("__repr__", &IndexWrapper<dist_t>::repr);
 }
 

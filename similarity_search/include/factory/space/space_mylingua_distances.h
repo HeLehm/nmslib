@@ -21,6 +21,8 @@
 #include <space/space_mylingua_distance_words_known.h>
 #include <space/space_mylingua_distance_semantic.h>
 
+#include <space/space_mylingua_just_skill.h>
+
 namespace similarity {
 
 /*
@@ -50,6 +52,11 @@ inline Space<dist_t>* CreateMyLinguaDistanceWordsKnown(const AnyParams& /* ignor
 template <typename dist_t, typename dist_uint_t>
 inline Space<dist_t>* CreateMyLinguaDistanceSemantic(const AnyParams& /* ignoring params */) {
   return new SpaceMyLinguaDistanceSemantic<dist_t,dist_uint_t>();
+}
+
+template <typename dist_t, typename dist_uint_t>
+inline Space<dist_t>* CreateMyLinguaJustSkill(const AnyParams& /* ignoring params */) {
+  return new SpaceMyLinguaJustSkill<dist_t,dist_uint_t>();
 }
 
 

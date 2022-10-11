@@ -90,6 +90,9 @@ inline void initSpaces() {
   SpaceFactoryRegistry<float>::CreateFuncPtr mylingua_dist_func_ptr5 = CreateMyLinguaDistanceSemantic<float,uint32_t>;
   REGISTER_SPACE_CREATOR(float, SPACE_MYLINGUA_DISTANCE_SEMANTIC,  mylingua_dist_func_ptr5 )
 
+  SpaceFactoryRegistry<float>::CreateFuncPtr mylingua_dist_func_ptr6 = CreateMyLinguaJustSkill<float,uint32_t>;
+  REGISTER_SPACE_CREATOR(float, SPACE_MYLINGUA_JUST_SKILL,  mylingua_dist_func_ptr6 )
+
   // mylingua  end
 
 
