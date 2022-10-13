@@ -244,6 +244,17 @@ struct IndexWrapper {
       }
       return items.size();
 
+    } else if (py::isinstance<py::iterable>(input)) {
+      size_t i = 0;
+      auto item = py::iter(input);
+      while (item != py::iterator::sentinel())
+      {
+        auto o = py::cast<py::object>(*item);
+        output->push_back(readObject(o, ids.size() ? ids.at(i) : i));
+        ++i;
+        ++item;
+      }
+      return i;
     } else if (data_type == DATATYPE_DENSE_VECTOR) {
       // allow numpy arrays to be returned here too
       py::array_t<dist_t, py::array::c_style | py::array::forcecast> items(input);
