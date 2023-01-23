@@ -24,8 +24,18 @@ namespace similarity {
  */
 
 template <typename dist_t, typename dist_uint_t>
-inline Space<dist_t>* CreateMyLingua(const AnyParams& /* ignoring params */) {
-  return new SpaceMyLingua<dist_t,dist_uint_t>();
+inline Space<dist_t>* CreateMyLingua(const AnyParams& AllParams) {
+  AnyParamManager pmgr(AllParams);
+
+  dist_t wordWeight;
+  dist_uint_t wordLength;
+
+  pmgr.GetParamRequired("wordWeight",  wordWeight);
+  pmgr.GetParamRequired("wordLength",  wordLength);
+
+  pmgr.CheckUnused();
+
+  return new SpaceMyLingua<dist_t,dist_uint_t>(wordWeight, wordLength);
 }
 
 /*

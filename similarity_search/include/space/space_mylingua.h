@@ -19,7 +19,6 @@
 #include <map>
 #include <stdexcept>
 
-#include "mylingua_constants.h"
 
 #include <portable_popcount.h>
 #include <string.h>
@@ -38,107 +37,41 @@ namespace similarity {
 template <typename dist_t, typename dist_uint_t>
 class SpaceMyLingua : public SpaceBitVector<dist_t,dist_uint_t> {
  public:
-  explicit SpaceMyLingua() {}
+  explicit SpaceMyLingua(dist_t wordWeight, dist_uint_t wordLength) :
+    SpaceBitVector<dist_t,dist_uint_t>(), wordWeight_(wordWeight), wordLength_(wordLength) {} 
   virtual ~SpaceMyLingua() {}
 
-  virtual std::string StrDesc() const { return "Mylingua skill and interest weighted score"; }
-
-  //PLAN:
-  //TODO: EDIT PYTHON ENCODING STUFF
-  //TODO: USE CONSTANTS AND ADD PYTHON BINDINGS
-  //
-
-  // sturcture:
-  // 32bit filter | MYLINGUA_CHAR_VOCAB_LENGTH * 32 bits of char bits | MYLINGUA_WORD_VOCAB_LENGTH * 32 bits of word bits | MYLINGUA_INTEREST_EMBEDDING_VEC_LEN  * 32 bits of bert embedding vec | 32 bit uint count
+  virtual std::string StrDesc() const {
+    return "MyLingua Score, wordWeight=" + ConvertToString(wordWeight_) + ", wordLength=" + ConvertToString(wordLength_);
+  }
 
  protected:
   virtual dist_t HiddenDistance(const Object* obj1, const Object* obj2) const {
     CHECK(obj1->datalength() > 0);
-    
-    /*
-    CHECK(
-      obj1->datalength() 
-      > (sizeof(dist_uint_t) * (
-        mylingua_constants::MYLINGUA_CHAR_VOCAB_LENGTH
-        + mylingua_constants::MYLINGUA_WORD_VOCAB_LENGTH
-        + 1
-      )) // plus one for the filter uint
-      + (sizeof(dist_t) * mylingua_constants::MYLINGUA_INTEREST_EMBEDDING_VEC_LEN)
-    );
-    +*/
     CHECK(obj1->datalength() == obj2->datalength());
-
+    const size_t length = obj1->datalength() / sizeof(dist_uint_t)
+                          - 1; // the last integer is an original number of elements
+    CHECK(length >= wordLength_);
+    const size_t charLength = length - wordLength_;
 
     // x(obj1) = article , y(obj2) = user (query input)
+    const dist_uint_t* x_int = reinterpret_cast<const dist_uint_t*>(obj1->data()); // article
+    const dist_uint_t* y_int = reinterpret_cast<const dist_uint_t*>(obj2->data()); // user
 
-    const dist_uint_t* x_int = reinterpret_cast<const dist_uint_t*>(obj1->data());
-    const dist_uint_t* y_int = reinterpret_cast<const dist_uint_t*>(obj2->data());
+    dist_t word_dist = BitAndNorm<dist_t,dist_uint_t>(x_int, y_int, wordLength_);
 
-    // compare topic filters 
-    const dist_uint_t topic_x = *x_int; // article
-    const dist_uint_t topic_y = *y_int; // user
-
-    if (__builtin_popcount(topic_x & topic_y) == 0) {
-      // topic mismatch so return highest distance possible
-      return 2.0;
+    if (charLength == 0){
+        return word_dist; // no char
     }
 
+    dist_t char_dist = BitAndNorm<dist_t,dist_uint_t>(x_int + wordLength_, y_int + wordLength_, charLength);
 
-
-    // shift x_int and y_int to the next dist_uint32_t
-    x_int++;
-    y_int++;
-
-
-    //get char freqmedian of user
-    const dist_t userCharFreqMedian = * reinterpret_cast<const dist_t*>(y_int);
-
-    //assuming sizeof(dist_t) == sizeof(dist_uint_t)
-    x_int++;
-    y_int++;
-
-    // get char score 
-    dist_t char_dist = BitAndNormFreq<dist_t,dist_uint_t>(x_int, y_int, userCharFreqMedian,mylingua_constants::MYLINGUA_CHAR_VOCAB_LENGTH);
-    // move pointers
-    x_int += mylingua_constants::MYLINGUA_CHAR_VOCAB_LENGTH;
-    y_int += mylingua_constants::MYLINGUA_CHAR_VOCAB_LENGTH;
-
-  
-    //get word freqmedian of user
-    const dist_t userWordFreqMedian = *reinterpret_cast<const dist_t*>(y_int);
-    //assuming sizeof(dist_t) == sizeof(dist_uint_t)
-    x_int++;
-    y_int++;
-
-    // get word dist 
-    dist_t word_dist = BitAndNormFreq<dist_t,dist_uint_t>(x_int, y_int, userWordFreqMedian,mylingua_constants::MYLINGUA_WORD_VOCAB_LENGTH);
-    // move pointers 
-    x_int += mylingua_constants::MYLINGUA_WORD_VOCAB_LENGTH;
-    y_int += mylingua_constants::MYLINGUA_WORD_VOCAB_LENGTH;
-
-
-    // weigh the skill distances
-    dist_t skill_dist = (mylingua_constants::MYLINGUA_CHAR_WEIGHT * char_dist) + (mylingua_constants::MYLINGUA_WORD_WEIGHT * word_dist);
-
-    // reinterpret as floats to compite interest dist (cosine sim)
-    const dist_t* x_float = reinterpret_cast<const dist_t*>(x_int);
-    const dist_t* y_float = reinterpret_cast<const dist_t*>(y_int);
-
-    //compute cosine sim
-    dist_t interest_dist = CosineSimilarity(x_float, y_float, mylingua_constants::MYLINGUA_INTEREST_EMBEDDING_VEC_LEN);
-
-
-    // shoudl never happen but we still copy  it  from the original code
-    if (my_isnan(interest_dist)) throw runtime_error("Bug: NAN dist! (SpaceCosineSimilarity (Bit norm version varvec ))");
-
-    // compute interest weight
-    float fx = (1.0f - skill_dist) * 0.55f;
-    fx = (fx * fx) + 0.1f;
-
-    dist_t final_dist = (skill_dist * (1.0f - fx)) + (interest_dist * fx);
-    
-    return final_dist;
+    return (wordWeight_ * word_dist) + ((1 - wordWeight_) * char_dist);
   }
+
+  private:
+  dist_t wordWeight_;
+  size_t wordLength_; 
 
   DISABLE_COPY_AND_ASSIGN(SpaceMyLingua);
 };

@@ -25,7 +25,8 @@
 #include "factory/space/space_test_encode_uint.h"
 
 #include "factory/space/space_mylingua.h"
-#include "factory/space/space_mylingua_distances.h"
+
+#include "factory/space/space_alpha_img_eucl.h"
 
 #include "factory/space/space_bit_and_norm_lft_cos_varvec_varweigh.h"
 #include "factory/space/space_bit_and_norm_lft_cos_varvec.h"
@@ -70,32 +71,15 @@ inline void initSpaces() {
   REGISTER_SPACE_CREATOR(float, SPACE_TEST_ENCODE_FLOAT,  test_float_func_ptr )
 
 
-  // My custom methods (mylingua)
+  // My custom methods
+  // mylingua
   SpaceFactoryRegistry<float>::CreateFuncPtr mylingua_func_ptr = CreateMyLingua<float,uint32_t>;
   REGISTER_SPACE_CREATOR(float, SPACE_MYLINGUA,  mylingua_func_ptr )
-
-  // mylingua debug distance functions
-  SpaceFactoryRegistry<float>::CreateFuncPtr mylingua_dist_func_ptr1 = CreateMyLinguaDistanceCharFreq<float,uint32_t>;
-  REGISTER_SPACE_CREATOR(float, SPACE_MYLINGUA_DISTANCE_CHAR_FREQ,  mylingua_dist_func_ptr1 )
-
-  SpaceFactoryRegistry<float>::CreateFuncPtr mylingua_dist_func_ptr2 = CreateMyLinguaDistanceCharKnown<float,uint32_t>;
-  REGISTER_SPACE_CREATOR(float, SPACE_MYLINGUA_DISTANCE_CHAR_KNOWN,  mylingua_dist_func_ptr2 )
-
-  SpaceFactoryRegistry<float>::CreateFuncPtr mylingua_dist_func_ptr3 = CreateMyLinguaDistanceWordsKnown<float,uint32_t>;
-  REGISTER_SPACE_CREATOR(float, SPACE_MYLINGUA_DISTANCE_WORDS_KNOWN,  mylingua_dist_func_ptr3 )
-
-  SpaceFactoryRegistry<float>::CreateFuncPtr mylingua_dist_func_ptr4 = CreateMyLinguaDistanceWordsFreq<float,uint32_t>;
-  REGISTER_SPACE_CREATOR(float, SPACE_MYLINGUA_DISTANCE_WORDS_FREQ,  mylingua_dist_func_ptr4 )
-
-  SpaceFactoryRegistry<float>::CreateFuncPtr mylingua_dist_func_ptr5 = CreateMyLinguaDistanceSemantic<float,uint32_t>;
-  REGISTER_SPACE_CREATOR(float, SPACE_MYLINGUA_DISTANCE_SEMANTIC,  mylingua_dist_func_ptr5 )
-
-  SpaceFactoryRegistry<float>::CreateFuncPtr mylingua_dist_func_ptr6 = CreateMyLinguaJustSkill<float,uint32_t>;
-  REGISTER_SPACE_CREATOR(float, SPACE_MYLINGUA_JUST_SKILL,  mylingua_dist_func_ptr6 )
-
   // mylingua  end
 
+  REGISTER_SPACE_CREATOR(float,   SPACE_ALPHA_IMG_EUCL,  CreateAplhaImgEucl)
 
+  //my custom end
 
   SpaceFactoryRegistry<float>::CreateFuncPtr bit_and_norm_lft_cos_varvec_varweigh_func_ptr = CreateBitAndNormLftCosVarvecVarweigh<float,uint32_t>;
   REGISTER_SPACE_CREATOR(float, SPACE_BIT_AND_NORM_LFT_COS_VARVEC_VARWEIGH,  bit_and_norm_lft_cos_varvec_varweigh_func_ptr )

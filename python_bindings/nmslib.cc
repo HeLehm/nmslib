@@ -26,7 +26,7 @@
 #include <bitset>
 #include <stdint.h>
 
-#include "mylingua_constants.h"
+
 #include "custom_conversion_functions.h"
 
 #include "init.h"
@@ -387,6 +387,9 @@ struct IndexWrapper {
     return distance;
   }
 
+  std::string getSpaceDesc() const {
+    return space->StrDesc();
+  }
 
   std::string repr() const {
     std::stringstream ret;
@@ -503,24 +506,6 @@ PYBIND11_PLUGIN(nmslib) {
 
   /*
   custom float and uint conversions  pybind
-  ----------------------- END -----------------------
-  */
-
-  /*
-  mylingua_constantes
-  ----------------------- START -----------------------
-  */
-
-  m.attr("MYLINGUA_CHAR_VOCAB_LENGTH") = py::int_(mylingua_constants::MYLINGUA_CHAR_VOCAB_LENGTH * 32);
-  m.attr("MYLINGUA_WORD_VOCAB_LENGTH") = py::int_(mylingua_constants::MYLINGUA_WORD_VOCAB_LENGTH * 32);
-  m.attr("MYLINGUA_INTEREST_EMBEDDING_VEC_LEN") = py::int_(mylingua_constants::MYLINGUA_INTEREST_EMBEDDING_VEC_LEN);
-
-  m.attr("MYLINGUA_CHAR_WEIGHT") = py::float_(mylingua_constants::MYLINGUA_CHAR_WEIGHT);
-  m.attr("MYLINGUA_WORD_WEIGHT") = py::float_(mylingua_constants::MYLINGUA_WORD_WEIGHT);
-  m.attr("MYLINGUA_FREQ_WEIGHT") = py::float_(mylingua_constants::MYLINGUA_FREQ_WEIGHT);
-
-  /*
-  mylingua_constantes
   ----------------------- END -----------------------
   */
 
@@ -714,7 +699,8 @@ void exportIndex(py::module * m) {
     .def("getDistanceToObj", &IndexWrapper<dist_t>::getDistanceToObj)
     .def("getDistanceToObjLft", &IndexWrapper<dist_t>::getDistanceToObjLft)
     .def("getDistanceToObjRgt", &IndexWrapper<dist_t>::getDistanceToObjRgt)
-    .def("__repr__", &IndexWrapper<dist_t>::repr);
+    .def("__repr__", &IndexWrapper<dist_t>::repr)
+    .def("getSpaceDesc", &IndexWrapper<dist_t>::getSpaceDesc);
 }
 
 template <> std::string distName<int>() { return "Int"; }
