@@ -19,3 +19,4 @@ similarity_search/tmpfile.bin
 dist/
 */.DS_Store
 .vscode/
+.DS_Store
